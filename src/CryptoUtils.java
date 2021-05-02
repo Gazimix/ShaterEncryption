@@ -30,11 +30,11 @@ public class CryptoUtils<K, V> {
     }
 
     public void encrypt(String key, File inputFile, File outputFile, HashMap<K, V> map) {
-        doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, outputFile, map);
+        doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, map);
     }
 
     public void decrypt(String key, File inputFile, File outputFile, HashMap<K, V> map) {
-        doCrypto(Cipher.DECRYPT_MODE, key, inputFile, outputFile, map);
+        doCrypto(Cipher.DECRYPT_MODE, key, inputFile, map);
     }
 
     private void doCrypto(int cipherMode, String key, File file, HashMap<K, V> mp) {

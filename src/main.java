@@ -14,7 +14,7 @@ public class main {
         String key = "abcdefghijklmnop";
         HashMap<String, String> mp = new HashMap<>();
         CryptoUtils<String ,String > crypt = new CryptoUtils<>();
-        crypt.encrypt(key, iFile, oFile, mp);
-        crypt.decrypt(key, oFile, dFile, mp);
+        crypt.encrypt(key, iFile, mp);
+        crypt.decrypt(key, oFile, mp);
     }
 }

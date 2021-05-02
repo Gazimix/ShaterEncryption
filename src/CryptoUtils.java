@@ -27,14 +27,24 @@ public class CryptoUtils<K, V> {
         return map.entrySet().stream();
     }
 
-    public HashMap<K, V> encrypt(String key, File inputFile, File outputFile, HashMap<K, V> map) {
-        return doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, map);
+    public HashMap<K, V> encrypt(String key, File file, HashMap<K, V> map) {
+        return doCrypto(Cipher.ENCRYPT_MODE, key, file, map);
     }
 
-    public HashMap<K, V> decrypt(String key, File inputFile, File outputFile, HashMap<K, V> map) {
-        return doCrypto(Cipher.DECRYPT_MODE, key, inputFile, map);
+    public HashMap<K, V> decrypt(String key, File file, HashMap<K, V> map) {
+        return doCrypto(Cipher.DECRYPT_MODE, key, file, map);
     }
 
+    /**
+     * Either encrypts the hash map given as an argument, or decrypts an encrypted file of a hash map.
+     * @param cipherMode determines whether in encryption mode or decryption mode
+     * @param key the key with which we encrypt, it's length must be divisible by 16.
+     * @param file the file from which we read into the hash map when decrypting, or into which we write the hash
+     *             map into when encrypting.
+     * @param mp the hash map (needed only if encrypting)
+     * @return the hash map (if in encryption mode, return it unaltered, if in decryption mode - return it after
+     * being decrypted from the encrypted file.
+     */
     private HashMap<K, V> doCrypto(int cipherMode, String key, File file, HashMap<K, V> mp) {
         try {
             if (cipherMode == Cipher.ENCRYPT_MODE) {
@@ -43,11 +53,11 @@ public class CryptoUtils<K, V> {
                 Cipher cipher = Cipher.getInstance(TRANSFORMATION);
                 cipher.init(cipherMode, secretKey);
                 String res = Arrays.toString(stream.toArray());
-                byte[] inputBytes = res.getBytes();
-                byte[] outputBytes = cipher.doFinal(inputBytes);
+                byte[] hasMapBytes = res.getBytes();
+                byte[] encryptedBytes = cipher.doFinal(hasMapBytes);
 
                 FileOutputStream outputStream = new FileOutputStream(file);
-                outputStream.write(outputBytes);
+                outputStream.write(encryptedBytes);
 
                 outputStream.close();
             } else if (cipherMode == Cipher.DECRYPT_MODE) {
@@ -59,11 +69,10 @@ public class CryptoUtils<K, V> {
                 byte[] inputBytes = new byte[(int) file.length()];
                 inputStream.read(inputBytes);
 
-                byte[] outputBytes = cipher.doFinal(inputBytes);
+                byte[] decryptedBytes = cipher.doFinal(inputBytes);
 
-                ByteArrayInputStream mStream = new ByteArrayInputStream(outputBytes);
+                ByteArrayInputStream mStream = new ByteArrayInputStream(decryptedBytes);
 
-                // todo convert output bytes to hashmap
                 ObjectInputStream ois = new ObjectInputStream(mStream);
                 mp = (HashMap<K, V>) ois.readObject();
                 cipher.doFinal(inputBytes);
@@ -73,5 +82,6 @@ public class CryptoUtils<K, V> {
             ex.printStackTrace();
         }
         return mp;
+
     }
 }

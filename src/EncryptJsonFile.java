@@ -23,7 +23,6 @@ public class EncryptJsonFile {
 
             // initialize encryption stream objects
 
-            
             PBEKeySpec pbeKeySpec = new PBEKeySpec(new char[]{'1', '2', '3'});
             SecretKeyFactory secretKeyFactory = SecretKeyFactory
                     .getInstance("PBEWithSHA1AndDESede");

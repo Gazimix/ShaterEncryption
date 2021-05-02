@@ -6,11 +6,14 @@ import javax.crypto.SecretKey;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import java.io.*;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
 
 
 public class EncryptJsonFile {
@@ -23,12 +26,19 @@ public class EncryptJsonFile {
 
             // initialize encryption stream objects
 
+            byte[] salt = new byte[8];
+            SecureRandom altr = new SecureRandom();
+            altr.nextBytes(salt);
+
             PBEKeySpec pbeKeySpec = new PBEKeySpec(new char[]{'1', '2', '3'});
             SecretKeyFactory secretKeyFactory = SecretKeyFactory
                     .getInstance("PBEWithSHA1AndDESede");
             SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
             Cipher c = Cipher.getInstance("PBEWithSHA1AndDESede");
-            c.init(Cipher.ENCRYPT_MODE, secretKey);
+
+            PBEParameterSpec pbeParameterSpec = new PBEParameterSpec(salt, 99999);
+
+            c.init(Cipher.ENCRYPT_MODE, secretKey, pbeParameterSpec);
 
             FileOutputStream fReader = new FileOutputStream("EncryptedFile");
             CipherOutputStream efile = new CipherOutputStream(fReader, c);
@@ -42,7 +52,7 @@ public class EncryptJsonFile {
             }
             bFile.close();
             writer.close();
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | IOException | InvalidKeySpecException e) {
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | IOException | InvalidKeySpecException | InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
     }

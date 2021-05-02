@@ -1,12 +1,10 @@
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -29,15 +27,15 @@ public class CryptoUtils<K, V> {
         return map.entrySet().stream();
     }
 
-    public void encrypt(String key, File inputFile, File outputFile, HashMap<K, V> map) {
-        doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, map);
+    public HashMap<K, V> encrypt(String key, File inputFile, File outputFile, HashMap<K, V> map) {
+        return doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, map);
     }
 
-    public void decrypt(String key, File inputFile, File outputFile, HashMap<K, V> map) {
-        doCrypto(Cipher.DECRYPT_MODE, key, inputFile, map);
+    public HashMap<K, V> decrypt(String key, File inputFile, File outputFile, HashMap<K, V> map) {
+        return doCrypto(Cipher.DECRYPT_MODE, key, inputFile, map);
     }
 
-    private void doCrypto(int cipherMode, String key, File file, HashMap<K, V> mp) {
+    private HashMap<K, V> doCrypto(int cipherMode, String key, File file, HashMap<K, V> mp) {
         try {
             if (cipherMode == Cipher.ENCRYPT_MODE) {
                 Stream<Map.Entry<K, V>> stream = mapToStream(mp);
@@ -62,17 +60,18 @@ public class CryptoUtils<K, V> {
                 inputStream.read(inputBytes);
 
                 byte[] outputBytes = cipher.doFinal(inputBytes);
-                // todo convert output bytes to hashmap
-                ObjectMapper om = new ObjectMapper();
-                TypeReference<Map<K,V>> tr = new TypeReference<Map<K,V>>;
 
+                ByteArrayInputStream mStream = new ByteArrayInputStream(outputBytes);
+
+                // todo convert output bytes to hashmap
+                ObjectInputStream ois = new ObjectInputStream(mStream);
+                mp = (HashMap<K, V>) ois.readObject();
+                cipher.doFinal(inputBytes);
                 inputStream.close();
             }
-
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException
-                | InvalidKeyException | BadPaddingException
-                | IllegalBlockSizeException | IOException ex) {
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | IOException | ClassNotFoundException ex) {
             ex.printStackTrace();
         }
+        return mp;
     }
 }

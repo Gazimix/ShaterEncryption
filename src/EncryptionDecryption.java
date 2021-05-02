@@ -19,7 +19,7 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * @author www.codejava.net
  */
-public class CryptoUtils<K, V> {
+public class EncryptionDecryption<K, V> {
     private static final String ALGORITHM = "AES";
     private static final String TRANSFORMATION = "AES";
 

@@ -1,7 +1,5 @@
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.HashMap;
 
 public class main {
@@ -13,7 +11,7 @@ public class main {
         File dFile = new File("C:\\Users\\Chend\\IdeaProjects\\DictionaryEncryption\\DecryptedFile.json");
         String key = "abcdefghijklmnop";
         HashMap<String, String> mp = new HashMap<>();
-        CryptoUtils<String ,String > crypt = new CryptoUtils<>();
+        EncryptionDecryption<String ,String > crypt = new EncryptionDecryption<>();
         crypt.encrypt(key, iFile, mp);
         crypt.decrypt(key, oFile, mp);
     }
